@@ -1,28 +1,45 @@
-const { User, Book } = require('../models');
+const { User } = require('../models');
 
 const resolvers = {
     // searchs all or single books and users
     Query: {
-        user: async (parents, args) => {
-            return await user.findById(args.id);
-        },
-        books: async (parents, args) => {
-            return await user.findOne({});
+        me: async (parents, args) => {
+            return User.find({$or: [{ _id: args.id }, { username: args.username }]});
         },
     },
     // saves books
     Mutation: {
-        login: async () => {
+    //     login: async () => {
             
+    //     },
+        addUser: async (parent, { username, email, password }) => {
+           return await User.create({username, email, password});
         },
-        addUser: async () => {
-
+        // may need an update to return 
+        saveBook: async (parent, { id, authors, description, bookId, image, link, title}) => {
+            const body = {
+                "authors": authors,
+                "description": description,
+                "bookId": bookId,
+                "image": image,
+                "link": link,
+                "title": title
+            }
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: id },
+                { $addToSet: { savedBooks: body } },
+                { new: true, runValidators: true }
+              );
+              return await body;
         },
-        saveBook: async () => {
+        removeBook: async (parent, {id, bookId}) => {
+            const removedBook = await User.findOneAndUpdate(
+                { _id: id },
+                { $pull: { savedBooks: { bookId: bookId } } },
+                { new: true }
+              );
 
-        },
-        removeBook: async () => {
-
+            return await removedBook;
         }
     }
 };

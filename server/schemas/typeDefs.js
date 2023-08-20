@@ -1,6 +1,5 @@
 const typeDefs = `
     type Book {
-        _id: ID!
         authors: String!
         description: String!
         bookId: String!
@@ -18,17 +17,17 @@ const typeDefs = `
     }
 
     type Query {
-        Me: [User]
+        me(id: String!): [User]
     }
 
     # TODO add data types
     type Mutation {
-        login(): User
-        addUser(): User
-        saveBook(): Book
-        removeBook(): Book
+        addUser(username: String!, email: String!, password: String!): User
+        saveBook(id: String!, authors: String!, description: String!, bookId: String!, image: String!, link: String!, title: String!): Book
+        removeBook(id: String!, bookId: String!): Book
+        # login(): User
+        # removeBook(): Book
     }
-
 `;
 
 module.exports = typeDefs;
