@@ -1,4 +1,5 @@
 const { User } = require('../models');
+const auth = require('../utils/auth');
 
 const resolvers = {
     // searchs all or single books and users
@@ -9,9 +10,21 @@ const resolvers = {
     },
     // saves books
     Mutation: {
-    //     login: async () => {
-            
-    //     },
+        login: async (parent, body) => {
+            const user = await User.findOne({ $or: [{ username: body.username }, { email: body.email }] });
+            if (!user) {
+                return {message: 'Cannot find user!'};
+            }
+
+            const correctPw = await user.isCorrectPassword(body.password);
+
+            if (!correctPw) {
+                return {message: 'Wrong password!'};
+            }
+
+            const token = auth.signToken(body);
+            return ( {token, user});
+        },
         addUser: async (parent, { username, email, password }) => {
            return await User.create({username, email, password});
         },
