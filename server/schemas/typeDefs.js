@@ -27,10 +27,10 @@ const typeDefs = `
 
     # TODO add data types
     type Mutation {
-        addUser(username: String!, email: String!, password: String!): User
+        addUser(username: String!, email: String!, password: String!): Auth
         saveBook(id: String!, authors: String!, description: String!, bookId: String!, image: String!, link: String!, title: String!): Book
         removeBook(id: String!, bookId: String!): User
-        login(username: String!, email: String!, password: String!): Auth
+        login(email: String!, password: String!): Auth
     }
 `;
 

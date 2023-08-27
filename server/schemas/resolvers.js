@@ -11,7 +11,7 @@ const resolvers = {
     // saves books
     Mutation: {
         login: async (parent, body) => {
-            const user = await User.findOne({ $or: [{ username: body.username }, { email: body.email }] });
+            const user = await User.findOne({ email: body.email });
             if (!user) {
                 return {message: 'Cannot find user!'};
             }
@@ -22,11 +22,13 @@ const resolvers = {
                 return {message: 'Wrong password!'};
             }
 
-            const token = auth.signToken(body);
+            const token = auth.signToken(user);
             return ( {token, user});
         },
         addUser: async (parent, { username, email, password }) => {
-           return await User.create({username, email, password});
+           const user = await User.create({username, email, password});
+           const token = auth.signToken(user);
+           return ({ token, user });
         },
         // may need an update to return 
         saveBook: async (parent, { id, authors, description, bookId, image, link, title}) => {
