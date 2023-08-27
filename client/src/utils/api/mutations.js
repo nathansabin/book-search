@@ -45,16 +45,16 @@ mutation Mutation($username: String!, $email: String!, $password: String!) {
 `;
 
 export const ADD_BOOK = gql`
-    mutation Mutation($saveBookId: String!, $authors: String!, $description: String!, $bookId: String!, $image: String!, $link: String!, $title: String!) {
-        saveBook(id: $saveBookId, authors: $authors, description: $description, bookId: $bookId, image: $image, link: $link, title: $title) {
-        authors
-        description
-        bookId
-        image
-        link
-        title
-        }
-    }  
+  mutation SaveBook($saveBookId: String!, $description: String!, $bookId: String!, $image: String!, $title: String!, $authors: [String!], $link: String) {
+    saveBook(id: $saveBookId, description: $description, bookId: $bookId, image: $image, title: $title, authors: $authors, link: $link) {
+      authors
+      description
+      bookId
+      image
+      link
+      title
+    }
+  }
 `;
 
 export const REMOVE_BOOK = gql`
