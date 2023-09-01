@@ -22,10 +22,9 @@ const typeDefs = `
     }
 
     type Query {
-        me(id: String!): [User]
+        me: User
     }
 
-    # TODO add data types
     type Mutation {
         addUser(username: String!, email: String!, password: String!): Auth
         saveBook(id: String!, authors: [String!], description: String!, bookId: String!, image: String!, link: String, title: String!): Book

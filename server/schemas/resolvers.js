@@ -4,8 +4,15 @@ const auth = require('../utils/auth');
 const resolvers = {
     // searchs all or single books and users
     Query: {
-        me: async (parents, args) => {
-            return User.find({$or: [{ _id: args.id }, { username: args.username }]});
+        me: async (parents, args, context) => {
+            try {
+                console.log(auth.authMiddleware);
+                return await User.find({ _id: context.user }); 
+            } catch {
+                console.log(context);
+                return await null;
+            }
+            
         },
     },
     // saves books
@@ -24,7 +31,7 @@ const resolvers = {
 
             const token = auth.signToken(user);
             return ( {token, user});
-        },
+        },   
         addUser: async (parent, { username, email, password }) => {
            const user = await User.create({username, email, password});
            const token = auth.signToken(user);

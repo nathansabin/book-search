@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
 import {
   Container,
   Card,
@@ -7,24 +6,35 @@ import {
   Row,
   Col
 } from 'react-bootstrap';
+import { useMutation, useQuery } from '@apollo/client';
 
-import { QUERRY_USER, REMOVE_BOOK } from '../utils/api/index';
+import { REMOVE_BOOK, QUERRY_USER } from '../utils/api/index';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
+  const [userData, setUserData] = useState([]);
 
-  const userID = Auth.getProfile()._id;
-  const [ loading, userData ] = useQuery( QUERRY_USER , {
-    meId: userID
-  });
+  const deleteBook = useMutation(REMOVE_BOOK);
 
-  const [ removeBook, { error } ] = useMutation(REMOVE_BOOK);
+  const { loading, error, data } = useQuery(QUERRY_USER);
 
-  // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
+  if (loading) {
+    return (<h2>LOADING...</h2>)
+  }
+  if (error) {
+    console.log(error)
+    return (<div>
+      <h1>ERROR</h1>
+    </div>)
+  }
+  console.log(data);
 
-  // create function that accepts the book's mongo _id value as param and deletes the book from the database
+  if (data) {
+    setUserData(data);
+  }
+
+  //create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
@@ -33,14 +43,14 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await removeBook(bookId, token);
+      const response = await deleteBook(bookId, token);
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error('something went wrong!');
       }
 
-      const updatedUser = await response.json();
-      userData = updatedUser;
+      const updatedUser = await response;
+      setUserData(updatedUser);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -48,11 +58,8 @@ const SavedBooks = () => {
     }
   };
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
-    return <h2>LOADING...</h2>;
-  }
-
+  //if data isn't here yet, say so
+ 
   return (
     <>
       <div fluid className='text-light bg-dark p-5'>
@@ -62,12 +69,12 @@ const SavedBooks = () => {
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {userData.savedBooks?.length
+            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks?.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.savedBooks?.map((book) => {
             return (
               <Col md="4">
                 <Card key={book.bookId} border='dark'>
