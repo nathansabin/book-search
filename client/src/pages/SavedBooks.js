@@ -18,21 +18,14 @@ const SavedBooks = () => {
   const deleteBook = useMutation(REMOVE_BOOK);
 
   const { loading, error, data } = useQuery(QUERRY_USER);
+  useEffect(() => {
+    if (data) {
+      setUserData(data.me);
+    }
+  }, [data]);
 
-  if (loading) {
-    return (<h2>LOADING...</h2>)
-  }
-  if (error) {
-    console.log(error)
-    return (<div>
-      <h1>ERROR</h1>
-    </div>)
-  }
-  console.log(data);
-
-  if (data) {
-    setUserData(data);
-  }
+  if (loading) return null;
+  if (error) return `Error! ${error}`;
 
   //create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -58,8 +51,7 @@ const SavedBooks = () => {
     }
   };
 
-  //if data isn't here yet, say so
- 
+
   return (
     <>
       <div fluid className='text-light bg-dark p-5'>

@@ -55,11 +55,14 @@ const resolvers = {
               return await body;
         },
         removeBook: async (parent, {id, bookId}) => {
-            const removedBook = await User.findOneAndUpdate(
+            const removedBook = await User.findOneAndDelete(
                 { _id: id },
-                { $pull: { savedBooks: { bookId: bookId } } },
-                { new: true }
-              );
+                (err, docs) => {
+                    if (err) {
+                        return null;
+                    }
+                    return docs;
+                });
 
             return await removedBook;
         }
