@@ -54,9 +54,11 @@ const resolvers = {
               );
               return await body;
         },
-        removeBook: async (parent, {id, bookId}) => {
+        removeBook: async (parent, {bookId}, context) => {
+            console.log(`bookId: ${bookId}`);
+            console.log(`userId: context.user._id`);
             const removedBook = await User.findOneAndDelete(
-                { _id: id },
+                { _id: context },
                 (err, docs) => {
                     if (err) {
                         return null;
