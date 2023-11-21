@@ -6,8 +6,8 @@ const resolvers = {
     Query: {
         me: async (parents, args, context) => {
             try {
-                console.log(auth.authMiddleware);
-                return await User.find({ _id: context.user }); 
+                const data = await User.findOne({ _id: context.user._id }); 
+                return data; 
             } catch {
                 console.log(context);
                 return await null;
