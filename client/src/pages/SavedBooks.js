@@ -15,7 +15,7 @@ import { removeBookId } from '../utils/localStorage';
 const SavedBooks = () => {
   const [userData, setUserData] = useState([]);
 
-  const deleteBook = useMutation(REMOVE_BOOK);
+  const [deleteBook, {deleteError}] = useMutation(REMOVE_BOOK);
 
   const { loading, error, data } = useQuery(QUERRY_USER);
   useEffect(() => {
@@ -36,8 +36,9 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
-
+      const response = await deleteBook({
+        variables: { bookId: bookId }
+      });
       if (!response) {
         throw new Error('something went wrong!');
       }
@@ -68,8 +69,8 @@ const SavedBooks = () => {
         <Row>
           {userData.savedBooks?.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col key={book.bookId} md="4">
+                <Card border='dark'>
                   {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>

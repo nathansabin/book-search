@@ -54,20 +54,27 @@ const resolvers = {
               );
               return await body;
         },
-        removeBook: async (parent, {bookId}, context) => {
-            console.log(`bookId: ${bookId}`);
-            console.log(`userId: context.user._id`);
-            const removedBook = await User.findOneAndDelete(
-                { _id: context },
-                (err, docs) => {
-                    if (err) {
-                        return null;
-                    }
-                    return docs;
-                });
-
-            return await removedBook;
-        }
+        removeBook: async (parent, { bookId }, context) => {
+            const userId = context.user._id;
+          
+            try {
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: userId },
+                {
+                  $pull: {
+                    savedBooks: { bookId: bookId }
+                  }
+                },
+                { new: true } 
+              );
+          
+              console.log(updatedUser);
+              return updatedUser;
+            } catch (error) {
+              console.error(error);
+              throw new Error('Unable to remove book');
+            }
+          }
     }
 };
 
